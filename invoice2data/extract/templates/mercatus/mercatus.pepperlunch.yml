@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+issuer: Pepper Lunch
+fields:
+  amount: Rounded Amt\n(\d+\.\d+)
+  date: Date:\s+(\d+\/\d+\/\d+)
+  invoice_number: Receipt No\:\s+(\d+)
+  find_payment_method:
+  - visa VISA
+  - mastercard MCARD
+  - amex AMEX
+  - cash CASH
+keywords:
+  - Pepper Lunch
+  - '200408968'
+options:
+  currency: SGD
+  date_formats:
+    - '%B %d, %Y'
+  languages:
+    - en
+  decimal_separator: '.'

@@ -152,6 +152,27 @@ class InvoiceTemplate(OrderedDict):
             if k.startswith('static_'):
                 logger.debug("field=%s | static value=%s", k, v)
                 output[k.replace('static_', '')] = v
+            # check if the field name begins with 'find_' and we have a list of options
+            elif k.startswith('find_') and type(v) is list:
+                logger.info("field=%s | find value=%s", k, v)
+                
+                # Loop through options
+                for v_option in v:
+
+                    
+                    # Break the options into the name and regex
+                    find_type,find_regex = v_option.split(' ')    
+                    logger.info("find_type=%s | find_regex=%s", find_type, find_regex)
+                    
+                    if re.findall(find_regex, optimized_str):
+                        output[k.replace('find_', '')] = find_type
+                        logger.info("Found=%s", find_type)
+                        find_match = True
+                        break
+                            
+                if not(find_match):    
+                    output[k.replace('find_', '')] = 'Not found'
+                    
             else:
                 logger.debug("field=%s | regexp=%s", k, v)
 

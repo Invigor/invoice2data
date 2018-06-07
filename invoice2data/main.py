@@ -7,9 +7,10 @@ import os
 from os.path import join
 import logging
 
-from .input import pdftotext
-from .input import pdfminer_wrapper
-from .input import tesseract
+# from .input import pdftotext
+# from .input import pdfminer_wrapper
+# from .input import tesseract
+from .input import googlevision
 
 from invoice2data.extract.loader import read_templates
 
@@ -23,21 +24,21 @@ logger = logging.getLogger(__name__)
 FILENAME = "{date} {desc}.pdf"
 
 input_mapping = {
-    'pdftotext': pdftotext,
-    'tesseract': tesseract,
-    'pdfminer': pdfminer_wrapper,
+#    'pdftotext': pdftotext,
+#    'tesseract': tesseract,
+#    'pdfminer': pdfminer_wrapper,
+    'googlevision' : googlevision
     }
 
 output_mapping = {
     'csv': to_csv,
     'json': to_json,
     'xml': to_xml,
-
     'none': None
     }
 
 
-def extract_data(invoicefile, templates=None, input_module=pdftotext):
+def extract_data(invoicefile, templates=None, input_module=googlevision):
     """Extracts structured data from PDF/image invoices.
 
     This function uses the text extracted from a PDF file or image and
@@ -52,7 +53,7 @@ def extract_data(invoicefile, templates=None, input_module=pdftotext):
         path of electronic invoice file in PDF,JPEG,PNG (example: "/home/duskybomb/pdf/invoice.pdf")
     templates : list of instances of class `InvoiceTemplate`, optional
         Templates are loaded using `read_template` function in `loader.py`
-    input_module : {'pdftotext', 'pdfminer', 'tesseract'}, optional
+    input_module : {'pdftotext', 'pdfminer', 'tesseract','googlevision'}, optional
         library to be used to extract text from given `invoicefile`,
 
     Returns
@@ -83,13 +84,16 @@ def extract_data(invoicefile, templates=None, input_module=pdftotext):
         templates = read_templates()
 
     # print(templates[0])
-    extracted_str = input_module.to_text(invoicefile).decode('utf-8')
+    try:
+        extracted_str = input_module.to_text(invoicefile).decode('utf-8')
+    except:
+        extracted_str = input_module.to_text(invoicefile)
 
-    logger.debug('START pdftotext result ===========================')
-    logger.debug(extracted_str)
-    logger.debug('END pdftotext result =============================')
+    logger.info('START pdftotext result ===========================')
+    logger.info(extracted_str)
+    logger.info('END pdftotext result =============================')
 
-    logger.debug('Testing {} template files'.format(len(templates)))
+    logger.info('Testing {} template files'.format(len(templates)))
     for t in templates:
         optimized_str = t.prepare_input(extracted_str)
 
@@ -105,7 +109,7 @@ def create_parser():
     parser = argparse.ArgumentParser(description='Extract structured data from PDF files and save to CSV or JSON.')
 
     parser.add_argument('--input-reader', choices=input_mapping.keys(),
-                        default='pdftotext', help='Choose text extraction function. Default: pdftotext')
+                        default='googlevision', help='Choose text extraction function. Default: googlevision')
 
     parser.add_argument('--output-format', choices=output_mapping.keys(),
                         default='none', help='Choose output format. Default: none')
