@@ -154,7 +154,7 @@ class InvoiceTemplate(OrderedDict):
                 output[k.replace('static_', '')] = v
             # check if the field name begins with 'find_' and we have a list of options
             elif k.startswith('find_') and type(v) is list:
-                logger.info("field=%s | find value=%s", k, v)
+                logger.debug("field=%s | find value=%s", k, v)
                 
                 # Loop through options
                 for v_option in v:
@@ -162,11 +162,11 @@ class InvoiceTemplate(OrderedDict):
                     
                     # Break the options into the name and regex
                     find_type,find_regex = v_option.split(' ')    
-                    logger.info("find_type=%s | find_regex=%s", find_type, find_regex)
+                    logger.debug("find_type=%s | find_regex=%s", find_type, find_regex)
                     
                     if re.findall(find_regex, optimized_str):
                         output[k.replace('find_', '')] = find_type
-                        logger.info("Found=%s", find_type)
+                        logger.debug("Found=%s", find_type)
                         find_match = True
                         break
                             
@@ -212,6 +212,7 @@ class InvoiceTemplate(OrderedDict):
                         output[k] = res_find[0]
                 else:
                     logger.warning("regexp for field %s didn't match", k)
+                    output[k] = 'Not found'
 
         output['currency'] = self.options['currency']
 
@@ -221,18 +222,18 @@ class InvoiceTemplate(OrderedDict):
                 plugin_func.extract(self, optimized_str, output)
 
         # If required fields were found, return output, else log error.
-        if 'required-fields' not in self.keys():
-            required_fields = ['date', 'amount', 'invoice_number', 'issuer']
-        else:
-            required_fields = []
-            for v in self['required-fields']:
-                required_fields.append(v)
+#        if 'required-fields' not in self.keys():
+#            required_fields = ['date', 'amount', 'invoice_number', 'issuer']
+#        else:
+#            required_fields = []
+#            for v in self['required-fields']:
+#                required_fields.append(v)
         
-        if set(required_fields).issubset(output.keys()):
-                output['desc'] = 'Invoice %s from %s' % (
-                    output['invoice_number'], self['issuer'])
-                logger.debug(output)
-                return output
-        else:
-            logger.error('Unable to match some fields:', output)
-            return None
+#        if set(required_fields).issubset(output.keys()):
+        output['desc'] = 'Invoice %s from %s' % (
+            output['invoice_number'], self['issuer'])
+        logger.debug(output)
+        return output
+ #       else:
+ #           logger.error('Unable to match some fields:', output)
+ #           return None
