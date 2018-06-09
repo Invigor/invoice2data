@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 issuer: Pepper Lunch
 fields:
+  static_mall: Jurong Point
   amount: Rounded Amt\n(\d+\.\d+)
   date: Date:\s+(\d+\/\d+\/\d+)
   invoice_number: Receipt No\:\s+(\d+)
@@ -11,6 +12,7 @@ fields:
   - cash CASH
 keywords:
   - Pepper Lunch
+  - Jurong Point
   - '200408968'
 options:
   currency: SGD

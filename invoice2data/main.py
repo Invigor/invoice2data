@@ -89,9 +89,9 @@ def extract_data(invoicefile, templates=None, input_module=googlevision):
     except:
         extracted_str = input_module.to_text(invoicefile)
 
-    logger.info('START result ===========================')
-    logger.info(extracted_str)
-    logger.info('END result =============================')
+    logger.debug('START result ===========================')
+    logger.debug(extracted_str)
+    logger.debug('END result =============================')
 
     logger.debug('Testing {} template files'.format(len(templates)))
     for t in templates:

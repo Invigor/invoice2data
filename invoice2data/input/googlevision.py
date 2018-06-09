@@ -43,15 +43,15 @@ def to_text(path):
     # Instantiates a client
     client = vision.ImageAnnotatorClient()
     
-    print(path)
-
     # Check if we have a URL or a file path
     if path.startswith('http'):
         
+        # Get image from URI
         response = requests.get(path)
         img = Image.open(BytesIO(response.content))
         width,height = img.size
         
+        # Check if image needs to be rotated
         if width > height:
            img  = img.rotate(90,expand=1 )
         
