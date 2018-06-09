@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+issuer: FairPrice Xtra
+fields:
+  static_mall: Jurong Point
+  amount: TOTAL\\n[\w\\n]+\$(\d+\.\d+)
+  date: Tr:[\d]+\\n[\d]+:[\d]+\\n(\d+\/\d+\/\d+)
+  invoice_number: Tr:(\d+)
+  find_payment_method:
+  - visa VISA
+  - mastercard MCARD
+  - amex AMEX
+  - cash CASH
+keywords:
+  - FAIRPRICE XTRA
+  - JURONG POINT
+  - M4-0004578-0
+options:
+  currency: SGD
+  date_formats:
+    - '%B %d, %Y'
+  languages:
+    - en
+  decimal_separator: '.'
