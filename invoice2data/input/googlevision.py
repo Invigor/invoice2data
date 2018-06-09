@@ -27,6 +27,10 @@ def to_text(path):
 
     import io
     import os
+    import requests
+    from PIL import Image
+    from io import BytesIO
+
 #    import logging as logger
     
     # Set the environment variable where the Google Cloud Application credentials are stored
@@ -39,16 +43,34 @@ def to_text(path):
     # Instantiates a client
     client = vision.ImageAnnotatorClient()
     
-    # The name of the image file to annotate
-    file_name = os.path.join(
-        os.path.dirname(__file__),path)
-    
-    # Loads the image into memory
-    with io.open(file_name, 'rb') as image_file:
-        content = image_file.read()
-    
+    print(path)
+
+    # Check if we have a URL or a file path
+    if path.startswith('http'):
+        
+        response = requests.get(path)
+        img = Image.open(BytesIO(response.content))
+        width,height = img.size
+        
+        if width > height:
+           img  = img.rotate(90,expand=1 )
+        
+        buffer = BytesIO()
+        img.save(buffer, "PNG")
+        content = buffer.getvalue()
+        
+    else:
+
+        # The name of the image file to annotate
+        file_name = os.path.join(
+            os.path.dirname(__file__),path)
+        
+        # Loads the image into memory
+        with io.open(file_name, 'rb') as image_file:
+            content = image_file.read()
+        
     image = types.Image(content=content)
-    
+        
     # Perform OCR detection on the image file
     text_response = client.text_detection(image=image)
     return text_response.full_text_annotation.text
