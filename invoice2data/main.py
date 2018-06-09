@@ -89,11 +89,11 @@ def extract_data(invoicefile, templates=None, input_module=googlevision):
     except:
         extracted_str = input_module.to_text(invoicefile)
 
-    logger.info('START pdftotext result ===========================')
+    logger.info('START result ===========================')
     logger.info(extracted_str)
-    logger.info('END pdftotext result =============================')
+    logger.info('END result =============================')
 
-    logger.info('Testing {} template files'.format(len(templates)))
+    logger.debug('Testing {} template files'.format(len(templates)))
     for t in templates:
         optimized_str = t.prepare_input(extracted_str)
 
@@ -129,7 +129,7 @@ def create_parser():
     parser.add_argument('--exclude-built-in-templates', dest='exclude_built_in_templates',
                         default=False, help='Ignore built-in templates.', action="store_true")
 
-    parser.add_argument('input_files', type=argparse.FileType('r'), nargs='+',
+    parser.add_argument('input_files', nargs='+',
                         help='File or directory to analyze.')
 
     return parser
@@ -161,7 +161,7 @@ def main(args=None):
     
     output = []
     for f in args.input_files:
-        res = extract_data(f.name, templates=templates, input_module=input_module)
+        res = extract_data(f, templates=templates, input_module=input_module)
         if res:
             logger.info(res)
             output.append(res)
