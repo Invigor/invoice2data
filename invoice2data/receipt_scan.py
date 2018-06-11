@@ -7,12 +7,14 @@ import uuid
 import io
 import os
 import requests
-import logging as logger
+import logging
 from PIL import Image
 from io import BytesIO
 import json
 
-logger.basicConfig(filename='receipt_scan.log',level=logger.DEBUG)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 def to_text_azure(path):
     
@@ -106,7 +108,7 @@ def to_text_google(path):
         
     # Perform OCR detection on the image file
     text_response = client.text_detection(image=image)
-    return text_response.full_text_annotation.text
+    return text_response.full_text_annotation.text.replace('\n',' ')
 
 def extract_data(invoicefile):
 
@@ -118,9 +120,7 @@ def extract_data(invoicefile):
     except:
         extracted_str_google = to_text_google(invoicefile)
         
-    logger.debug(extracted_str_google)
-    print('Google:')
-    print(extracted_str_google)
+    logger.info('Google OCR: %s',extracted_str_google)
 
     # Check if Google has returned anything
     if extracted_str_google:
@@ -138,10 +138,9 @@ def extract_data(invoicefile):
                         extracted_str_azure = to_text_azure(invoicefile).decode('utf-8')
                     except:
                         extracted_str_azure = to_text_azure(invoicefile)
+                        
+                    logger.info('Azure OCR: %s',extracted_str_azure)
     
-                    print('Azure:')
-                    print(extracted_str_azure)
-        
                     optimized_str = t.prepare_input(extracted_str_azure)
                     azure_results = t.extract(optimized_str)
                     
@@ -162,10 +161,9 @@ def extract_data(invoicefile):
             extracted_str_azure = to_text_azure(invoicefile).decode('utf-8')
         except:
             extracted_str_azure = to_text_azure(invoicefile)
+        
+        logger.info('Azure OCR: %s',extracted_str_azure)
             
-        print('Azure:')
-        print(extracted_str_azure)
-
         for t in templates:
             optimized_str = t.prepare_input(extracted_str_azure)
     
@@ -175,7 +173,7 @@ def extract_data(invoicefile):
                 return azure_results
             
 
-    logger.debug('No template for %s', invoicefile)
+    logger.info('No template for %s', invoicefile)
     return False
 
 def handler(event, context):
