@@ -4,8 +4,8 @@ This module abstracts templates for invoice providers.
 Templates are initially read from .yml files and then kept as class.
 """
 
-import yaml
-import os
+# import yaml
+# import os
 import re
 import dateparser
 from unidecode import unidecode
@@ -93,9 +93,31 @@ class InvoiceTemplate(OrderedDict):
     def matches_input(self, optimized_str):
         """See if string matches keywords set in template file"""
 
+        retailer_match = False
+        mall_match = False
+        gst_match = False
+
+        for keyword in self['keywords']:
+            if keyword.startswith('Retailer '):
+                logger.debug('Trying to match: %s',keyword.split('Retailer ')[1].replace("'", ""))
+                retailer_match = keyword.split('Retailer ')[1].replace("'", "") in optimized_str
+                logger.debug('retailer_match: %s',retailer_match)
+            if keyword.startswith('Mall '):
+                logger.debug('Trying to match: %s',keyword.split('Mall ')[1].replace("'", ""))
+                mall_match = keyword.split('Mall ')[1].replace("'", "") in optimized_str
+                logger.debug('mall_match: %s',mall_match)
+            if keyword.startswith('GST '):
+                logger.debug('Trying to match: %s',keyword.split('GST ')[1].replace("'", ""))
+                gst_match = keyword.split('GST ')[1].replace("'", "") in optimized_str
+                logger.debug('gst_match: %s',gst_match)                
+
+        return (retailer_match and mall_match) or gst_match
+            
+        """
         if all([keyword in optimized_str for keyword in self['keywords']]):
             logger.debug('Matched template %s', self['template_name'])
             return True
+        """
 
     def parse_number(self, value):
         assert value.count(self.options['decimal_separator']) < 2,\
@@ -112,8 +134,8 @@ class InvoiceTemplate(OrderedDict):
         """Parses date and returns date after parsing"""
         res = dateparser.parse(
             value, date_formats=self.options['date_formats'],
-            languages=self.options['languages'])
-        logger.debug("result of date parsing=%s", res)
+            languages=self.options['languages']).strftime('%Y-%m-%d')
+        logger.debug("Result of date parsing: %s", res)
         return res
 
     def coerce_type(self, value, target_type):
@@ -156,6 +178,8 @@ class InvoiceTemplate(OrderedDict):
             elif k.startswith('find_') and type(v) is list:
                 logger.debug("field=%s | find value=%s", k, v)
                 
+                find_match = False
+                
                 # Loop through options
                 for v_option in v:
 
@@ -185,6 +209,12 @@ class InvoiceTemplate(OrderedDict):
                     res_find = []
                     for v_option in v:
                         res_val = re.findall(v_option, optimized_str)
+                        
+                        # Join extractions if we are getting more than one
+                        if len(res_val[0]) > 1:
+                            logger.debug("Found multiple extractions: %s", res_val)
+                            res_val[0] = ''.join(res_val[0])
+                            
                         if res_val:
                             if sum_field:
                                 res_find += res_val
@@ -193,7 +223,15 @@ class InvoiceTemplate(OrderedDict):
                                 break
                 else:
                     res_find = re.findall(v, optimized_str)
+
+
                 if res_find:
+
+                    # Join extractions if we are getting more than one
+                    if len(res_find[0]) > 1:
+                        logger.debug("Found multiple extractions %s", res_find)
+                        res_find[0] = ''.join(res_find[0])
+
                     logger.debug("res_find=%s", res_find)
                     if k.startswith('date') or k.endswith('date'):
                         output[k] = self.parse_date(res_find[0])

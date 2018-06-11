@@ -12,6 +12,7 @@ import logging as logger
 from .invoice_template import InvoiceTemplate
 import codecs
 import chardet
+import boto3
 
 # borrowed from http://stackoverflow.com/a/21912744
 def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
@@ -33,6 +34,44 @@ def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
 
     return yaml.load(stream, OrderedLoader)
 
+
+def read_templates_s3(bucket_name=None):
+
+    s3 = boto3.resource('s3',
+    aws_access_key_id="AKIAIGYMEVV5IUJ5MYLA",
+    aws_secret_access_key="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"
+        )
+
+    if bucket_name is None:
+        bucket_name = 'invigor-mercatus-receipts-templates'
+
+    # create new bucket or return if exists
+    bucket = s3.Bucket(bucket_name)
+    
+    logger.debug('Retrieving templates from %s',bucket)
+
+    output = []
+
+    for obj in bucket.objects.all():
+        key = obj.key
+        if key.endswith('.yml'):
+            logger.debug('Retrieving template %s',key)
+            body = obj.get()['Body'].read()
+            tpl = ordered_load(body)
+            tpl['template_name'] = key
+
+            # Test if all required fields are in template:
+            assert 'keywords' in tpl.keys(), 'Missing keywords field.'
+            required_fields = ['date', 'amount', 'invoice_number']
+            assert len(set(required_fields).intersection(tpl['fields'].keys())) == len(required_fields), \
+                'Missing required key in template {}. Found {}'.format(key, tpl['fields'].keys())
+
+            # Keywords as list, if only one.
+            if type(tpl['keywords']) is not list:
+                tpl['keywords'] = [tpl['keywords']]
+
+            output.append(InvoiceTemplate(tpl))
+    return output
 
 def read_templates(folder=None):
     """

@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
-issuer: FairPrice Xtra
+issuer: Uniqlo
 fields:
   static_mall: Jurong Point
-  amount: TOTAL\n[\w\n]+\$(\d+\.\d+)
-  date: Tr:[\d]+\n[\d]+:[\d]+\n(\d+\/\d+\/\d+)
-  invoice_number: Tr:(\d+)
+  amount: Total\n[\w\n]+\$(\d+\.\d+)
+  date: (\d+\/\d+\/\d+)
+  invoice_number: \d+\/\d+\/\d+ \d+:\d+ ([\d+\s*]+)
   find_payment_method:
   - visa VISA
   - mastercard MCARD
   - amex AMEX
+  - nets NETS
+  - others JCB
   - cash CASH
 keywords:
-  - FAIRPRICE XTRA
-  - JURONG POINT
-  - M4-0004578-0
+  - Retailer 'UNIQLO'
+  - Mall 'Jurong Point'
+  - GST '200816544K'
 options:
   currency: SGD
   date_formats:

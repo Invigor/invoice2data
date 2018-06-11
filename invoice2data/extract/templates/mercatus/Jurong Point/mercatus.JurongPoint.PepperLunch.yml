@@ -9,11 +9,13 @@ fields:
   - visa VISA
   - mastercard MCARD
   - amex AMEX
+  - nets NETS
+  - others JCB
   - cash CASH
 keywords:
-  - Pepper Lunch
-  - Jurong Point
-  - '200408968'
+  - Retailer 'Pepper Lunch'
+  - Mall 'Jurong Point'
+  - GST '200408968'
 options:
   currency: SGD
   date_formats:
