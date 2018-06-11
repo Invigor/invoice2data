@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-issuer: Pepper Lunch
+issuer: BHG
 fields:
   static_mall: Jurong Point
-  amount: Rounded Amt\s(\d+\.\d+)
-  date: Date:\s+(\d+\/\d+\/\d+)
-  invoice_number: Receipt No\:\s+(\d+)
+  amount: Total Sale\s\n[A-Z\s]*(\d+\.\d+)
+  date: (\d+-\d\d-\d\d)
+  invoice_number: \d+-\d+-\d+ \d+:\d+ ([\d+ *]+)
   find_payment_method:
   - visa VISA
   - mastercard MCARD
@@ -13,9 +13,9 @@ fields:
   - others JCB
   - cash CASH
 keywords:
-  - Retailer 'Pepper Lunch'
+  - Retailer 'BHG'
   - Mall 'Jurong Point'
-  - GST '200408968'
+  - GST 'M2-0119092-4'
 options:
   currency: SGD
   date_formats:

@@ -2,9 +2,9 @@
 issuer: Uniqlo
 fields:
   static_mall: Jurong Point
-  amount: Total\n[\w\n]+\$(\d+\.\d+)
+  amount: Total\s*(\d+\.\d+)
   date: (\d+\/\d+\/\d+)
-  invoice_number: \d+\/\d+\/\d+ \d+:\d+ ([\d+\s*]+)
+  invoice_number: \d+\/\d+\/\d+ \d+:\d+ ([\d+ *]+)
   find_payment_method:
   - visa VISA
   - mastercard MCARD

@@ -2,9 +2,9 @@
 issuer: FairPrice Xtra
 fields:
   static_mall: Jurong Point
-  amount: TOTAL\s*\n*[\w\n]*\$(\d+\.\d+)
+  amount: TOTAL\s*\w*\$(\d+\.\d+)
   date: (\d+\/\d+\/\d+)
-  invoice_number: Ch:\s*(\d+)\n*\s*Tr:\s*(\d+)
+  invoice_number: Ch:\s*(\d+)\s*Tr:\s*(\d+)
   find_payment_method:
   - visa VISA
   - mastercard MCARD

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-issuer: Pepper Lunch
+issuer: Guardian
 fields:
   static_mall: Jurong Point
-  amount: Rounded Amt\s(\d+\.\d+)
-  date: Date:\s+(\d+\/\d+\/\d+)
-  invoice_number: Receipt No\:\s+(\d+)
+  amount: Total \([\w|\s|\$]+?(\d+\.\d+)
+  date: (\d+-\d{2}-\d{4})
+  invoice_number: T#(\d+)
   find_payment_method:
   - visa VISA
   - mastercard MCARD
@@ -13,9 +13,9 @@ fields:
   - others JCB
   - cash CASH
 keywords:
-  - Retailer 'Pepper Lunch'
+  - Retailer 'Guardian Health'
   - Mall 'Jurong Point'
-  - GST '200408968'
+  - GST 'MR-8500225-7'
 options:
   currency: SGD
   date_formats:
